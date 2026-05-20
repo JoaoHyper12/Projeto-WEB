@@ -1,0 +1,25 @@
+[
+    {
+        "id":1,
+        "name":"Camisola Lakers",
+        "price":89,
+        "category":"camisola",
+        "image":"https://images.footballfanatics.com/los-angeles-lakers/los-angeles-lakers-nike-icon-edition-swingman-jersey-lebron-james-mens_ss5_p-13368413+u-4p0lc4yzgm2qx7ltnmvl+v-r8owax8sjk0vns5icwiv.jpg"
+    },
+
+    {
+        "id":2,
+        "name":"Bola NBA",
+        "price":40,
+        "category":"bola",
+        "image":"https://m.media-amazon.com/images/I/81M0m3U4Z-L.jpg"
+    },
+
+    {
+        "id":3,
+        "name":"Nike Jordan",
+        "price":120,
+        "category":"tenis",
+        "image":"https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/air-jordan-1-mid-shoes-SQf7DM.png"
+    }
+]
