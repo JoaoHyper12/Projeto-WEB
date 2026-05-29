@@ -1,15 +1,20 @@
-﻿.app-wrapper {
+/* ============================================================
+   App.css – Basket Store
+   ============================================================ */
+
+.app-wrapper {
   min-height: 100vh;
 }
 
+/* ── Topbar ── */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 24px 32px;
+  padding: 20px 32px;
   backdrop-filter: blur(18px);
-  background: rgba(2, 6, 22, 0.72);
+  background: rgba(2, 6, 22, 0.78);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -18,63 +23,73 @@
 
 .brand a {
   display: inline-grid;
-  gap: 6px;
+  gap: 4px;
+  text-decoration: none;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   letter-spacing: -0.04em;
 }
 
 .brand p {
   margin: 0;
-  color: rgba(237, 242, 255, 0.78);
+  font-size: 0.82rem;
+  color: rgba(237, 242, 255, 0.6);
 }
 
 nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 8px;
 }
 
 nav a {
-  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
   border-radius: 999px;
-  color: rgba(237, 242, 255, 0.74);
+  color: rgba(237, 242, 255, 0.7);
+  font-size: 0.9rem;
   transition: background 0.18s ease, color 0.18s ease;
 }
 
 nav a.active,
 nav a:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
 }
 
 .badge {
-  margin-left: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  font-size: 0.8rem;
-  background: rgba(255, 255, 255, 0.12);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #5c98ff, #8d6dff);
   border-radius: 999px;
+  color: #fff;
 }
 
+/* ── Layout principal ── */
 .main-content {
   width: min(1200px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 24px 0 48px;
+  padding: 32px 0 64px;
 }
 
+/* ── Hero ── */
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 1fr);
+  gap: 32px;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 52px;
 }
 
 .hero-copy {
@@ -88,96 +103,101 @@ nav a:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #88d4ff;
   border-radius: 999px;
-  padding: 8px 14px;
-  letter-spacing: 0.08em;
-  font-size: 0.8rem;
+  padding: 7px 14px;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
   text-transform: uppercase;
+  width: fit-content;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  line-height: 0.98;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  line-height: 1;
 }
 
-.hero-copy p {
-  max-width: 680px;
-  color: rgba(237, 242, 255, 0.8);
+.hero-copy > p {
+  max-width: 600px;
+  color: rgba(237, 242, 255, 0.78);
+  line-height: 1.65;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-}
-
-.hero-button,
-.hero-link,
-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 20px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: transform 0.18s ease, background 0.18s ease;
+  gap: 14px;
 }
 
 .hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
   background: linear-gradient(135deg, #5c98ff, #8d6dff);
   color: white;
+  font-size: 0.9rem;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
-.hero-button:hover,
-button:hover {
+.hero-button:hover {
   transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .hero-link {
-  color: rgba(237, 242, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  color: rgba(237, 242, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.9rem;
+  transition: background 0.18s ease;
 }
 
-.hero-visual {
-  display: grid;
-  gap: 20px;
+.hero-link:hover {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .hero-card {
-  padding: 28px;
+  padding: 30px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 32px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.16);
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
 }
 
 .hero-card h2 {
-  margin: 0 0 14px;
-  font-size: 1.75rem;
+  margin: 0 0 12px;
+  font-size: 1.5rem;
 }
 
 .hero-card p {
-  margin: 0 0 18px;
-  color: rgba(237, 242, 255, 0.78);
+  margin: 0 0 20px;
+  color: rgba(237, 242, 255, 0.72);
 }
 
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 
 .hero-tags span {
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
-  color: rgba(237, 242, 255, 0.82);
-  font-size: 0.9rem;
+  color: rgba(237, 242, 255, 0.8);
+  font-size: 0.85rem;
 }
 
+/* ── Secções ── */
 .section-block {
-  margin-top: 36px;
+  margin-top: 40px;
 }
 
 .section-heading {
@@ -189,24 +209,39 @@ button:hover {
 }
 
 .section-heading h2 {
+  margin: 0 0 6px;
+  font-size: 1.55rem;
+}
+
+.section-heading p {
   margin: 0;
-  font-size: 1.6rem;
+  color: rgba(237, 242, 255, 0.65);
+  font-size: 0.9rem;
 }
 
-.section-heading span {
-  color: rgba(237, 242, 255, 0.72);
+.section-heading span,
+.section-heading > a,
+.view-all-link {
+  color: rgba(237, 242, 255, 0.6);
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
+.view-all-link:hover {
+  color: #fff;
+}
+
+/* ── Filtros ── */
 .filters {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .filter-group {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .filter-group.full-width {
@@ -214,66 +249,101 @@ button:hover {
 }
 
 .filter-group label {
-  color: rgba(237, 242, 255, 0.82);
+  color: rgba(237, 242, 255, 0.78);
+  font-size: 0.875rem;
 }
 
 .filter-group input,
 .filter-group select {
   width: 100%;
-  min-height: 48px;
-  border-radius: 18px;
+  min-height: 46px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.04);
   color: #ffffff;
   padding: 0 16px;
+  outline: none;
+  transition: border-color 0.18s;
 }
 
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: rgba(92, 152, 255, 0.5);
+}
+
+.filter-group select option {
+  background: #0b1123;
+}
+
+/* ── Grelha de cards ── */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 20px;
 }
 
-.product-card,
-.team-card,
-.cart-item,
-.checkout-card,
-.about-card {
+/* ── Card de produto ── */
+.product-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.product-card img {
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.22);
+}
+
+.product-img-wrap {
+  position: relative;
   width: 100%;
-  height: 220px;
+  aspect-ratio: 4 / 3;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.product-img-wrap img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.product-copy,
-.product-footer {
-  padding: 18px 20px;
-}
-
-.product-tag {
-  display: inline-flex;
-  padding: 6px 12px;
+.product-category-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 22, 0.7);
+  backdrop-filter: blur(8px);
   color: #7bbdff;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.product-copy {
+  padding: 16px 18px 8px;
+  flex: 1;
+}
+
+.product-team {
+  margin: 0 0 6px;
+  color: rgba(237, 242, 255, 0.55);
   font-size: 0.8rem;
-  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .product-copy h3 {
-  margin: 0 0 10px;
-}
-
-.product-copy p {
   margin: 0;
-  color: rgba(237, 242, 255, 0.72);
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .product-footer {
@@ -281,118 +351,297 @@ button:hover {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  padding: 14px 18px 18px;
+}
+
+.product-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .product-footer button,
 button {
-  min-height: 44px;
-  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 18px;
   border-radius: 999px;
   background: linear-gradient(135deg, #5c98ff, #8d6dff);
   color: white;
   cursor: pointer;
+  border: none;
+  font-size: 0.875rem;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
+.product-footer button:hover,
+button:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Tabela de jogadores ── */
+.players-table-wrap {
+  overflow-x: auto;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.players-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.players-table thead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.players-table th {
+  text-align: left;
+  padding: 14px 20px;
+  color: rgba(237, 242, 255, 0.55);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.players-table td {
+  padding: 13px 20px;
+  color: rgba(237, 242, 255, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.players-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.players-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.player-name-cell {
+  font-weight: 600;
+  color: #ffffff !important;
+}
+
+.pos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #88d4ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  min-width: 36px;
+}
+
+/* ── Equipas ── */
 .team-card {
-  padding: 26px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-2px);
 }
 
 .team-abbr {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 18px;
-  border-radius: 18px;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 16px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.08);
   font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: #88d4ff;
 }
 
-.team-card h3,
-.cart-item h3,
-.checkout-card h3,
-.about-card h2 {
-  margin: 0 0 12px;
-}
-
-.team-card p,
-.cart-item p,
-.about-card p,
-.about-card li {
+.team-card h3 {
   margin: 0 0 10px;
-  color: rgba(237, 242, 255, 0.74);
+  font-size: 1rem;
 }
 
+.team-card p {
+  margin: 0 0 6px;
+  color: rgba(237, 242, 255, 0.65);
+  font-size: 0.875rem;
+}
+
+/* ── Carrinho ── */
 .cart-grid {
   display: grid;
-  grid-template-columns: minmax(300px, 1fr) minmax(280px, 360px);
-  gap: 20px;
+  grid-template-columns: 1fr minmax(260px, 320px);
+  gap: 24px;
+  align-items: start;
+}
+
+.cart-items {
+  display: grid;
+  gap: 16px;
 }
 
 .cart-item {
-  padding: 24px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.cart-item h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.cart-item p {
+  margin: 0 0 6px;
+  color: rgba(237, 242, 255, 0.65);
+  font-size: 0.875rem;
+}
+
+.price {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .cart-actions {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: 18px;
 }
 
 .cart-actions button {
-  min-width: 46px;
-  padding: 0 14px;
+  min-width: 40px;
+  padding: 0 12px;
   background: rgba(255, 255, 255, 0.08);
+  font-weight: 700;
+}
+
+.cart-actions span {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.remove-btn {
+  background: rgba(255, 80, 80, 0.15) !important;
+  color: #ff8080 !important;
+  padding: 0 14px !important;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 80, 80, 0.25) !important;
 }
 
 .checkout-card {
   padding: 26px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
   display: grid;
-  gap: 18px;
+  gap: 14px;
+  position: sticky;
+  top: 90px;
+}
+
+.checkout-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.checkout-card p {
+  margin: 0;
+  color: rgba(237, 242, 255, 0.72);
+  font-size: 0.9rem;
 }
 
 .checkout-card .price {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.4rem;
 }
 
+/* ── Sobre ── */
 .about-card {
-  padding: 26px;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  max-width: 680px;
+}
+
+.about-card h2 {
+  margin: 0 0 16px;
+  font-size: 1.6rem;
+}
+
+.about-card p {
+  margin: 0 0 18px;
+  color: rgba(237, 242, 255, 0.78);
+  line-height: 1.65;
 }
 
 .about-card ul {
-  margin: 16px 0 0;
+  margin: 0;
   padding-left: 20px;
 }
 
 .about-card li {
   margin-bottom: 10px;
-}
-
-.empty {
   color: rgba(237, 242, 255, 0.75);
 }
 
-@media (max-width: 940px) {
+/* ── Utilitários ── */
+.empty {
+  color: rgba(237, 242, 255, 0.55);
+  padding: 20px 0;
+}
+
+/* ── Responsivo ── */
+@media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
-  }
-
-  .cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 
   .cart-grid {
     grid-template-columns: 1fr;
   }
+
+  .checkout-card {
+    position: static;
+  }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 700px) {
   .topbar {
     flex-direction: column;
     align-items: stretch;
+    padding: 16px 20px;
   }
 
   nav {
@@ -401,5 +650,9 @@ button {
 
   .filters {
     grid-template-columns: 1fr;
+  }
+
+  .main-content {
+    width: calc(100% - 32px);
   }
 }
