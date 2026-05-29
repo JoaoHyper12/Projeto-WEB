@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equipas NBA - Basket Store</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Equipas NBA</h1>
+      <p>Consulta detalhes das equipas e filtra por conferência.</p>
+    </div>
+    <nav>
+      <a href="../index.html">Loja</a>
+      <a href="./players.html">Jogadores</a>
+      <a href="./teams.html" class="active">Equipas</a>
+      <a href="./cart.html">Carrinho</a>
+      <a href="./about.html">Sobre</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="filters">
+      <div>
+        <label for="conferenceFilter">Conferência</label>
+        <select id="conferenceFilter">
+          <option value="all">Todas</option>
+          <option value="East">Eastern</option>
+          <option value="West">Western</option>
+        </select>
+      </div>
+      <div>
+        <label for="teamSearch">Pesquisar equipa</label>
+        <input id="teamSearch" type="text" placeholder="Lakers, Celtics, Bulls..." />
+      </div>
+    </section>
+
+    <section>
+      <h2>Equipas</h2>
+      <div id="teamsContainer" class="cards-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="../js/teams.js"></script>
+</body>
+</html>

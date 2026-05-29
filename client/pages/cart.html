@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho - Basket Store</title>
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Carrinho</h1>
+      <p>Rever e atualizar os produtos adicionados ao carrinho.</p>
+    </div>
+    <nav>
+      <a href="../index.html">Loja</a>
+      <a href="./players.html">Jogadores</a>
+      <a href="./teams.html">Equipas</a>
+      <a href="./cart.html" class="active">Carrinho</a>
+      <a href="./about.html">Sobre</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-heading">
+        <h2>Itens no carrinho</h2>
+        <button id="clearCart" type="button">Esvaziar carrinho</button>
+      </div>
+      <div id="cartItems" class="cards-grid"></div>
+      <div id="cartSummary" class="product-card" style="margin-top:16px;"></div>
+    </section>
+  </main>
+
+  <script type="module" src="../js/cart.js"></script>
+</body>
+</html>
