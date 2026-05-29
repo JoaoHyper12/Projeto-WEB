@@ -9,9 +9,18 @@ let products = [];
 
 async function loadProducts() {
   try {
-    const response = await fetch('./Criar_Produtos.json');
-    if (!response.ok) throw new Error('Não foi possível carregar os produtos.');
-    products = await response.json();
+    // Buscar jogadores da API balldontlie e mapear para produtos (placeholder de imagem)
+    const response = await fetch('https://www.balldontlie.io/api/v1/players?per_page=24');
+    if (!response.ok) throw new Error('Não foi possível carregar os produtos (API externa).');
+    const data = await response.json();
+
+    products = data.data.map((player) => ({
+      id: `player-${player.id}`,
+      name: `${player.first_name} ${player.last_name}`,
+      price: 9.99,
+      category: player.team && player.team.abbreviation ? player.team.abbreviation : 'N/D',
+      image: '/images/placeholder-player.webp',
+    }));
     showProducts(products);
     updateCartCount();
   } catch (error) {

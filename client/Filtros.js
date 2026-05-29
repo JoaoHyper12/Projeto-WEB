@@ -3,15 +3,24 @@ document.getElementById("productsContainer");
 
 let products = [];
 
-fetch("products.json")
-.then(response => response.json())
-.then(data => {
+// Carregar jogadores da API como produtos (placeholder de imagem)
+fetch('https://www.balldontlie.io/api/v1/players?per_page=50')
+    .then((response) => response.json())
+    .then((data) => {
+        products = data.data.map((player) => ({
+            id: `player-${player.id}`,
+            name: `${player.first_name} ${player.last_name}`,
+            price: 9.99,
+            category: player.team && player.team.abbreviation ? player.team.abbreviation : 'N/D',
+            image: '/images/placeholder-player.webp',
+        }));
 
-    products = data;
-
-    showProducts(products);
-
-});
+        showProducts(products);
+    })
+    .catch(() => {
+        products = [];
+        showProducts(products);
+    });
 
 function showProducts(productsArray){
 

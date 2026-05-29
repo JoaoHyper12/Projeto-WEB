@@ -1,10 +1,22 @@
 export async function fetchProducts() {
-  const response = await fetch('/products.json');
+  // Usar a API balldontlie como fonte de dados e mapear jogadores para "produtos"
+  const response = await fetch('https://www.balldontlie.io/api/v1/players?per_page=50');
   if (!response.ok) {
-    throw new Error('Não foi possível carregar os produtos.');
+    throw new Error('Não foi possível carregar os produtos (API externa).');
   }
 
-  return response.json();
+  const data = await response.json();
+
+  // Mapear jogadores para um formato de produto compatível com a app
+  const products = data.data.map((player) => ({
+    id: `player-${player.id}`,
+    name: `${player.first_name} ${player.last_name}`,
+    price: 9.99,
+    category: player.team && player.team.abbreviation ? player.team.abbreviation : 'N/D',
+    image: '/images/placeholder-player.webp',
+  }))
+
+  return products;
 }
 
 export async function fetchPlayerPreview() {
