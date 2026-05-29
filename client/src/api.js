@@ -1,27 +1,51 @@
+const API_BASE = 'https://api.balldontlie.io/nba/v1'
+const apiKey = import.meta.env.VITE_BALLDONTLIE_API_KEY
+
+function buildHeaders() {
+  if (!apiKey) {
+    return undefined
+  }
+
+  return {
+    Authorization: apiKey,
+  }
+}
+
+async function parseResponse(response, type) {
+  if (response.ok) {
+    return response.json()
+  }
+
+  const body = await response.text().catch(() => '')
+  const errorMessage = response.status === 401
+    ? 'A API balldontlie exige uma chave de autorização. Defina VITE_BALLDONTLIE_API_KEY no .env.'
+    : `Não foi possível carregar ${type} da API. (${response.status} ${body || response.statusText})`
+
+  throw new Error(errorMessage)
+}
+
 export async function fetchPlayers({ search = '', team = 'all', page = 1, perPage = 50 } = {}) {
-  const params = new URLSearchParams({ per_page: perPage, page });
+  const params = new URLSearchParams({ per_page: perPage, page })
 
   if (search) {
-    params.set('search', search);
+    params.set('search', search)
   }
 
   if (team !== 'all') {
-    params.append('team_ids[]', team);
+    params.append('team_ids[]', team)
   }
 
-  const response = await fetch(`https://www.balldontlie.io/api/v1/players?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error('Não foi possível carregar os jogadores da API.');
-  }
+  const response = await fetch(`${API_BASE}/players?${params.toString()}`, {
+    headers: buildHeaders(),
+  })
 
-  return response.json();
+  return parseResponse(response, 'os jogadores')
 }
 
 export async function fetchTeams() {
-  const response = await fetch('https://www.balldontlie.io/api/v1/teams');
-  if (!response.ok) {
-    throw new Error('Não foi possível carregar as equipas da API.');
-  }
+  const response = await fetch(`${API_BASE}/teams`, {
+    headers: buildHeaders(),
+  })
 
-  return response.json();
+  return parseResponse(response, 'as equipas')
 }
