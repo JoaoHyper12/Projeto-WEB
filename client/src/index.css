@@ -1,9 +1,9 @@
-:root {
-  color: #111827;
-  background: #f2f4f8;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+﻿:root {
+  color: #ffffff;
+  background: #050816;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 * {
@@ -14,13 +14,19 @@ html,
 body,
 #root {
   margin: 0;
-  padding: 0;
   min-height: 100%;
 }
 
 body {
-  background: #f2f4f8;
-  color: #111827;
+  background: radial-gradient(circle at top left, rgba(98, 181, 255, 0.16), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(77, 255, 186, 0.14), transparent 30%),
+    linear-gradient(180deg, #050816 0%, #0b1123 100%);
+  color: #edf2ff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 button,
@@ -29,6 +35,11 @@ select {
   font: inherit;
 }
 
-#root {
-  min-height: 100vh;
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  border: none;
 }
