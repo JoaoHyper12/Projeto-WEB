@@ -3,7 +3,8 @@ const CART_STORAGE_KEY = 'basketCart'
 export function loadCart() {
   try {
     return JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY) || '[]')
-  } catch (error) {
+  } catch (err) {
+    console.error('Failed to load cart from localStorage', err)
     return []
   }
 }

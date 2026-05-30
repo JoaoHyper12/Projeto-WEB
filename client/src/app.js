@@ -20,14 +20,14 @@ const ROUTES = [
 const DEFAULT_ROUTE = 'home'
 
 const STORE_PRODUCTS = [
-  { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99, image: './imagens/Camisola Lakers – LeBron #23.jpg' },
-  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: './imagens/Camisola Warriors – Curry #30.webp' },
-  { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99, image: './imagens/Camisola Bulls – Jordan #23.webp' },
-  { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99, image: './imagens/Camisola Celtics – Tatum #0.jpg' },
-  { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99, image: './imagens/Bola NBA Official Game Ball.jpg' },
-  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: './imagens/Bola de Treino NBA.webp' },
-  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: './imagens/Boné NBA – Lakers Edition.webp' },
-  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: './imagens/Mochila NBA – Warriors.webp' },
+  { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99, image: 'camisola-lakers-lebron.jpg' },
+  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: 'camisola-warriors-curry.webp' },
+  { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99, image: 'camisola-bulls-jordan.webp' },
+  { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99, image: 'camisola-celtics-tatum.jpg' },
+  { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99, image: 'bola-nba-official.jpg' },
+  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: 'bola-treino-nba.jpg' },
+  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: 'bone-lakers.jpg' },
+  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: 'mochila-warriors.jpg' },
 ]
 
 const PRODUCT_CATEGORIES = ['Todos', ...new Set(STORE_PRODUCTS.map((product) => product.category))]
@@ -80,6 +80,11 @@ function createElement(tag, props = {}, ...children) {
       return
     }
 
+    if (key === 'value' || key === 'checked' || key === 'selected' || key === 'multiple' || key === 'disabled') {
+      element[key] = value
+      return
+    }
+
     element.setAttribute(key, value)
   })
 
@@ -100,10 +105,6 @@ function createElement(tag, props = {}, ...children) {
 function getCurrentRoute() {
   const route = window.location.hash.replace('#', '')
   return route || DEFAULT_ROUTE
-}
-
-function setRoute(route) {
-  window.location.hash = `#${route}`
 }
 
 function formatCurrency(value) {
@@ -542,8 +543,15 @@ function renderPlayerStatsArea() {
     return createElement('p', { className: 'empty', text: appState.errorStats })
   }
 
-  if (!appState.playerStats || !appState.playerStats.data || appState.playerStats.data.length === 0) {
+  if (!appState.playerStats || !appState.playerStats.loaded) {
     return createElement('p', { className: 'empty', text: 'Clique em "Mostrar Stats" para ver as médias do jogador.' })
+  }
+
+  if (!appState.playerStats.data || appState.playerStats.data.length === 0) {
+    return createElement('p', {
+      className: 'empty',
+      text: `Não há estatísticas disponíveis para ${appState.playerStats.playerName} na época ${appState.playerStats.season}.`,
+    })
   }
 
   const stats = appState.playerStats.data[0]
@@ -747,7 +755,7 @@ async function handlePlayerStats(playerId, playerName) {
   render()
   try {
     const data = await fetchPlayerStats({ playerId, season: 2024 })
-    appState.playerStats = { data: data.data, playerName, season: 2024 }
+    appState.playerStats = { data: data.data, playerName, season: 2024, loaded: true }
   } catch (error) {
     appState.errorStats = error.message
     appState.playerStats = null

@@ -47,14 +47,6 @@ img {
   border-radius: 12px;
 }
 
-.product-img-wrap {
-  position: relative;
-  min-height: 240px;
-  overflow: hidden;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
 .product-img-wrap img {
   width: 100%;
   height: 100%;
@@ -372,16 +364,17 @@ nav a:hover {
 }
 
 .product-img-wrap {
+  position: relative;
   display: grid;
-  min-height: 180px;
+  min-height: 240px;
+  overflow: hidden;
   background: radial-gradient(circle at top left, rgba(94, 159, 255, 0.24), transparent 40%),
     radial-gradient(circle at bottom right, rgba(141, 109, 255, 0.18), transparent 35%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
   border-radius: 20px;
-  align-items: center;
-  justify-items: center;
+  align-items: stretch;
+  justify-items: stretch;
   text-align: center;
-  padding: 18px;
   color: rgba(255, 255, 255, 0.78);
 }
 
