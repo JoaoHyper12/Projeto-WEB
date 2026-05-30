@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const distDir = path.join(__dirname, 'dist');
+const rootDir = path.join(__dirname);
 const port = process.env.PORT || 3000;
 
 const mimeTypes = {
@@ -42,24 +42,18 @@ function sendFile(res, filePath) {
 }
 
 const server = http.createServer((req, res) => {
-  if (!fs.existsSync(distDir)) {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Pasta dist não encontrada. Execute "npm run build" primeiro.');
-    return;
-  }
-
   let requestPath = decodeURI(req.url.split('?')[0]);
   if (requestPath === '/' || requestPath === '') {
     requestPath = '/index.html';
   }
 
-  const filePath = path.join(distDir, requestPath);
+  const filePath = path.join(rootDir, requestPath);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     sendFile(res, filePath);
     return;
   }
 
-  const fallbackPath = path.join(distDir, 'index.html');
+  const fallbackPath = path.join(rootDir, 'index.html');
   if (fs.existsSync(fallbackPath)) {
     sendFile(res, fallbackPath);
     return;
