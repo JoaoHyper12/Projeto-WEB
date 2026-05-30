@@ -77,7 +77,7 @@ function createElement(tag, props = {}, ...children) {
       element.addEventListener(key.slice(2).toLowerCase(), value)
       return
     }
-    if (key === 'checked' || key === 'disabled' || key === 'multiple') {
+    if (key === 'value' || key === 'checked' || key === 'disabled' || key === 'multiple' || key === 'selected') {
       element[key] = value
       return
     }
