@@ -21,13 +21,13 @@ const DEFAULT_ROUTE = 'home'
 
 const STORE_PRODUCTS = [
   { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99, image: 'camisola-lakers-lebron.jpg' },
-  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: 'camisola-warriors-curry.webp' },
+  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: 'camisola-warriors-curry.jpg' },
   { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99, image: 'camisola-bulls-jordan.webp' },
   { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99, image: 'camisola-celtics-tatum.jpg' },
   { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99, image: 'bola-nba-official.jpg' },
-  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: 'bola-treino-nba.jpg' },
-  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: 'bone-lakers.jpg' },
-  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: 'mochila-warriors.jpg' },
+  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: 'bola-treino-nba.webp' },
+  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: 'bone-lakers.webp' },
+  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: 'mochila-warriors.webp' },
 ]
 
 const PRODUCT_CATEGORIES = ['Todos', ...new Set(STORE_PRODUCTS.map((product) => product.category))]
@@ -43,6 +43,7 @@ const appState = {
   productSearch: '',
   cart: loadCart(),
   playerStats: null,
+  selectedPlayerId: null,
   loadingGames: false,
   loadingStats: false,
   loading: { players: false, teams: false },
@@ -64,34 +65,27 @@ function createElement(tag, props = {}, ...children) {
       element.className = value
       return
     }
-
     if (key === 'text') {
       element.textContent = value
       return
     }
-
     if (key === 'html') {
       element.innerHTML = value
       return
     }
-
     if (key.startsWith('on') && typeof value === 'function') {
       element.addEventListener(key.slice(2).toLowerCase(), value)
       return
     }
-
-    if (key === 'value' || key === 'checked' || key === 'selected' || key === 'multiple' || key === 'disabled') {
+    if (key === 'checked' || key === 'disabled' || key === 'multiple') {
       element[key] = value
       return
     }
-
     element.setAttribute(key, value)
   })
 
   children.flat().forEach((child) => {
-    if (child === null || child === undefined || typeof child === 'boolean') {
-      return
-    }
+    if (child === null || child === undefined || typeof child === 'boolean') return
     if (typeof child === 'string' || typeof child === 'number') {
       element.appendChild(document.createTextNode(child))
       return
@@ -100,6 +94,19 @@ function createElement(tag, props = {}, ...children) {
   })
 
   return element
+}
+
+// Cria um <select> com a opção correta marcada como selected
+function createSelect(props, options, currentValue) {
+  const select = createElement('select', props)
+  options.forEach(({ value, label }) => {
+    const option = createElement('option', { value, text: label })
+    if (String(value) === String(currentValue)) {
+      option.selected = true
+    }
+    select.appendChild(option)
+  })
+  return select
 }
 
 function getCurrentRoute() {
@@ -141,22 +148,13 @@ function renderHeader() {
   const navLinks = ROUTES.map((routeInfo) => {
     const routeKey = routeInfo.key
     const isActive = routeKey === appState.route
-    const link = createElement(
-      'a',
-      {
-        href: `#${routeKey}`,
-        className: isActive ? 'active' : '',
-      },
-      routeInfo.label,
-    )
-
+    const link = createElement('a', { href: `#${routeKey}`, className: isActive ? 'active' : '' }, routeInfo.label)
     if (routeKey === 'cart') {
       const { itemCount } = getCartTotals()
       if (itemCount > 0) {
         link.appendChild(createElement('span', { className: 'badge', text: itemCount }))
       }
     }
-
     return link
   })
 
@@ -186,22 +184,14 @@ function renderPage() {
   if (!ROUTES.some((item) => item.key === appState.route)) {
     appState.route = DEFAULT_ROUTE
   }
-
   switch (appState.route) {
-    case 'home':
-      return renderHomePage()
-    case 'products':
-      return renderProductsPage()
-    case 'players':
-      return renderPlayersPage()
-    case 'teams':
-      return renderTeamsPage()
-    case 'cart':
-      return renderCartPage()
-    case 'about':
-      return renderAboutPage()
-    default:
-      return renderHomePage()
+    case 'home':     return renderHomePage()
+    case 'products': return renderProductsPage()
+    case 'players':  return renderPlayersPage()
+    case 'teams':    return renderTeamsPage()
+    case 'cart':     return renderCartPage()
+    case 'about':    return renderAboutPage()
+    default:         return renderHomePage()
   }
 }
 
@@ -219,13 +209,7 @@ function renderHomePage() {
         { className: 'hero-copy' },
         createElement('span', { className: 'eyebrow', text: 'BALLOUT' }),
         createElement('h1', null, 'NBA Store Reloaded'),
-        createElement(
-          'p',
-          null,
-          'Loja de basketball com dados reais da API ',
-          createElement('strong', { text: 'balldontlie.io' }),
-          '.',
-        ),
+        createElement('p', null, 'Loja de basketball com dados reais da API ', createElement('strong', { text: 'balldontlie.io' }), '.'),
         createElement(
           'div',
           { className: 'hero-actions' },
@@ -239,9 +223,7 @@ function renderHomePage() {
         createElement('div', { className: 'hero-card' },
           createElement('h2', { text: 'O que encontras aqui' }),
           createElement('p', { text: 'Camisolas, bolas e acessórios oficiais, mais informação real sobre jogadores e equipas NBA.' }),
-          createElement(
-            'div',
-            { className: 'hero-tags' },
+          createElement('div', { className: 'hero-tags' },
             createElement('span', { text: '🏀 Produtos oficiais' }),
             createElement('span', { text: '👟 Jogadores reais' }),
             createElement('span', { text: '🏆 Equipas NBA' }),
@@ -255,9 +237,7 @@ function renderHomePage() {
       createElement(
         'div',
         { className: 'section-heading' },
-        createElement(
-          'div',
-          null,
+        createElement('div', null,
           createElement('h2', { text: 'Produtos em destaque' }),
           createElement('p', { text: 'Os artigos mais populares da loja.' }),
         ),
@@ -271,9 +251,7 @@ function renderHomePage() {
       createElement(
         'div',
         { className: 'section-heading' },
-        createElement(
-          'div',
-          null,
+        createElement('div', null,
           createElement('h2', { text: 'Jogos NBA recentes' }),
           createElement('p', { text: 'Últimos jogos carregados da API balldontlie.' }),
         ),
@@ -288,32 +266,32 @@ function renderHomePage() {
 function renderProductsPage() {
   const filteredProducts = getFilteredProducts()
 
+  // Select de categorias com opção correta selecionada
+  const categorySelect = createSelect(
+    { id: 'categoryFilter', onChange: (e) => handleCategoryChange(e.target.value) },
+    PRODUCT_CATEGORIES.map((cat) => ({ value: cat, label: cat })),
+    appState.productCategory,
+  )
+
+  const searchInput = createElement('input', {
+    id: 'productSearch',
+    type: 'text',
+    placeholder: 'Camisola, bola, equipa...',
+    onInput: (e) => handleProductSearch(e.target.value),
+  })
+  searchInput.value = appState.productSearch
+
   return createElement(
     'div',
     null,
-    renderFilters(
-      createElement('input', {
-        id: 'productSearch',
-        type: 'text',
-        value: appState.productSearch,
-        placeholder: 'Camisola, bola, equipa...',
-        onInput: (event) => handleProductSearch(event.target.value),
-      }),
-      createElement('select', {
-        id: 'categoryFilter',
-        value: appState.productCategory,
-        onChange: (event) => handleCategoryChange(event.target.value),
-      }, PRODUCT_CATEGORIES.map((category) => createElement('option', { value: category, text: category }))),
-    ),
+    renderFilters(searchInput, categorySelect),
     createElement(
       'section',
       { className: 'section-block' },
       createElement(
         'div',
         { className: 'section-heading' },
-        createElement(
-          'div',
-          null,
+        createElement('div', null,
           createElement('h2', { text: 'Produtos' }),
           createElement('p', { text: 'Camisolas, bolas e acessórios oficiais NBA.' }),
         ),
@@ -329,35 +307,34 @@ function renderProductsPage() {
 function renderPlayersPage() {
   const players = appState.players
 
+  // Select de equipas com opção correta selecionada
+  const teamOptions = [
+    { value: 'all', label: 'Todas as equipas' },
+    ...appState.teams.map((t) => ({ value: String(t.id), label: t.full_name })),
+  ]
+  const teamSelect = createSelect(
+    { id: 'teamFilter', onChange: (e) => handlePlayerTeam(e.target.value) },
+    teamOptions,
+    String(appState.playerFilters.team),
+  )
+
+  const searchInput = createElement('input', {
+    id: 'playerSearch',
+    type: 'text',
+    placeholder: 'Digite um nome...',
+    onInput: (e) => handlePlayerQuery(e.target.value),
+  })
+  searchInput.value = appState.playerFilters.query
+
   return createElement(
     'div',
     null,
-    renderFilters(
-      createElement('input', {
-        id: 'playerSearch',
-        type: 'text',
-        value: appState.playerFilters.query,
-        placeholder: 'Digite um nome...',
-        onInput: (event) => handlePlayerQuery(event.target.value),
-      }),
-      createElement('select', {
-        id: 'teamFilter',
-        value: appState.playerFilters.team,
-        onChange: (event) => handlePlayerTeam(event.target.value),
-      }, [
-        createElement('option', { value: 'all', text: 'Todas as equipas' }),
-        ...appState.teams.map((team) => createElement('option', { value: team.id, text: team.full_name })),
-      ]),
-    ),
+    renderFilters(searchInput, teamSelect),
     createElement(
       'section',
       { className: 'section-block' },
-      createElement(
-        'div',
-        { className: 'section-heading' },
-        createElement(
-          'div',
-          null,
+      createElement('div', { className: 'section-heading' },
+        createElement('div', null,
           createElement('h2', { text: 'Jogadores NBA' }),
           createElement('p', { text: 'Dados reais via balldontlie.io.' }),
         ),
@@ -375,27 +352,23 @@ function renderPlayersPage() {
 function renderTeamsPage() {
   const teams = getFilteredTeams()
 
+  const searchInput = createElement('input', {
+    id: 'teamSearch',
+    type: 'text',
+    placeholder: 'Digite o nome da equipa...',
+    onInput: (e) => handleTeamSearch(e.target.value),
+  })
+  searchInput.value = appState.teamSearch
+
   return createElement(
     'div',
     null,
-    renderFilters(
-      createElement('input', {
-        id: 'teamSearch',
-        type: 'text',
-        value: appState.teamSearch,
-        placeholder: 'Digite o nome da equipa...',
-        onInput: (event) => handleTeamSearch(event.target.value),
-      }),
-    ),
+    renderFilters(searchInput),
     createElement(
       'section',
       { className: 'section-block' },
-      createElement(
-        'div',
-        { className: 'section-heading' },
-        createElement(
-          'div',
-          null,
+      createElement('div', { className: 'section-heading' },
+        createElement('div', null,
           createElement('h2', { text: 'Equipas NBA' }),
           createElement('p', { text: 'Equipas oficiais retornadas pela API.' }),
         ),
@@ -418,17 +391,11 @@ function renderCartPage() {
     createElement(
       'div',
       { className: 'section-heading' },
-      createElement(
-        'div',
-        null,
+      createElement('div', null,
         createElement('h2', { text: 'Carrinho' }),
         createElement('p', { text: 'Os seus itens guardados localmente.' }),
       ),
-      createElement(
-        'button',
-        { type: 'button', onClick: handleClearCart, disabled: appState.cart.length === 0 },
-        'Esvaziar carrinho',
-      ),
+      createElement('button', { type: 'button', onClick: handleClearCart, disabled: appState.cart.length === 0 }, 'Esvaziar carrinho'),
     ),
     appState.cart.length === 0
       ? createElement('p', { className: 'empty', text: 'O seu carrinho está vazio.' })
@@ -453,9 +420,7 @@ function renderAboutPage() {
     'section',
     { className: 'section-block about-card' },
     createElement('h2', { text: 'Sobre este projeto' }),
-    createElement('p', {
-      html: 'Este site foi criado com JavaScript puro, consumindo dados reais da API <strong>balldontlie.io</strong> e usando HTML, CSS e DOM.',
-    }),
+    createElement('p', { html: 'Este site foi criado com JavaScript puro, consumindo dados reais da API <strong>balldontlie.io</strong> e usando HTML, CSS e DOM.' }),
     createElement(
       'ul',
       null,
@@ -472,6 +437,29 @@ function renderFilters(...controls) {
   return createElement('section', { className: 'filters' }, controls)
 }
 
+function renderProductCard(product) {
+  return createElement(
+    'article',
+    { className: 'product-card' },
+    createElement('div', { className: 'product-img-wrap' },
+      createElement('img', {
+        src: `./imagens/${product.image}`,
+        alt: product.name,
+        className: 'product-img',
+      }),
+      createElement('span', { className: 'product-category-badge', text: product.category }),
+    ),
+    createElement('div', { className: 'product-copy' },
+      createElement('p', { className: 'product-team', text: product.team }),
+      createElement('h3', null, product.name),
+    ),
+    createElement('div', { className: 'product-footer' },
+      createElement('span', { className: 'product-price', text: formatCurrency(product.price) }),
+      createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar'),
+    ),
+  )
+}
+
 function renderPlayersTable(players) {
   const headerRow = createElement(
     'tr',
@@ -484,10 +472,11 @@ function renderPlayersTable(players) {
     createElement('th', { text: 'Stats' }),
   )
 
-  const bodyRows = players.map((player) =>
-    createElement(
+  const bodyRows = players.map((player) => {
+    const isSelected = appState.selectedPlayerId === player.id
+    const row = createElement(
       'tr',
-      null,
+      { className: isSelected ? 'selected-row' : '' },
       createElement('td', { className: 'player-name-cell', text: player.name }),
       createElement('td', null, createElement('span', { className: 'pos-badge', text: player.position })),
       createElement('td', { text: player.team }),
@@ -496,10 +485,19 @@ function renderPlayersTable(players) {
       createElement(
         'td',
         null,
-        createElement('button', { type: 'button', onClick: () => handlePlayerStats(player.id, player.name) }, 'Mostrar Stats'),
+        createElement(
+          'button',
+          {
+            type: 'button',
+            className: 'stats-btn',
+            onClick: () => handlePlayerStats(player.id, player.name),
+          },
+          isSelected && appState.playerStats ? 'Fechar' : 'Ver stats',
+        ),
       ),
-    ),
-  )
+    )
+    return row
+  })
 
   return createElement(
     'div',
@@ -513,66 +511,52 @@ function renderPlayersTable(players) {
   )
 }
 
-function renderGameCard(game) {
-  const home = game.home_team_abbreviation || game.home_team?.abbreviation || 'N/A'
-  const visitor = game.visitor_team_abbreviation || game.visitor_team?.abbreviation || 'N/A'
-  const status = game.status || 'N/A'
-  const date = new Date(game.date).toLocaleDateString('pt-PT', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-  const score = `${game.home_team_score || 0} - ${game.visitor_team_score || 0}`
-
-  return createElement(
-    'article',
-    { className: 'product-card' },
-    createElement('h3', { text: `${home} vs ${visitor}` }),
-    createElement('p', { text: `Resultado: ${score}` }),
-    createElement('p', { text: `Data: ${date}` }),
-    createElement('p', { text: status }),
-  )
-}
-
 function renderPlayerStatsArea() {
   if (appState.loadingStats) {
     return createElement('p', { className: 'empty', text: 'A carregar estatísticas...' })
   }
-
   if (appState.errorStats) {
     return createElement('p', { className: 'empty', text: appState.errorStats })
   }
-
   if (!appState.playerStats || !appState.playerStats.loaded) {
-    return createElement('p', { className: 'empty', text: 'Clique em "Mostrar Stats" para ver as médias do jogador.' })
+    return createElement('p', { className: 'empty', text: 'Clica em "Ver stats" para ver as médias do jogador.' })
   }
-
   if (!appState.playerStats.data || appState.playerStats.data.length === 0) {
-    return createElement('p', {
-      className: 'empty',
-      text: `Não há estatísticas disponíveis para ${appState.playerStats.playerName} na época ${appState.playerStats.season}.`,
-    })
+    return createElement('p', { className: 'empty', text: `Sem estatísticas disponíveis para ${appState.playerStats.playerName} em 2024.` })
   }
 
   const stats = appState.playerStats.data[0]
   return createElement(
-    'article',
-    { className: 'section-block' },
-    createElement('h3', { text: `Médias ${appState.playerStats.playerName} - ${appState.playerStats.season}` }),
-    createElement('div', { className: 'cards-grid' },
-      createElement('article', { className: 'product-card' },
-        createElement('h4', { text: 'PTS' }),
-        createElement('p', { text: stats.pts.toFixed(1) }),
-      ),
-      createElement('article', { className: 'product-card' },
-        createElement('h4', { text: 'REB' }),
-        createElement('p', { text: stats.reb.toFixed(1) }),
-      ),
-      createElement('article', { className: 'product-card' },
-        createElement('h4', { text: 'AST' }),
-        createElement('p', { text: stats.ast.toFixed(1) }),
-      ),
+    'div',
+    { className: 'stats-panel' },
+    createElement('h3', { text: `Médias de ${appState.playerStats.playerName} — Época 2024` }),
+    createElement('div', { className: 'stats-grid' },
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.pts ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'PTS' })),
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.reb ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'REB' })),
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.ast ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'AST' })),
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.stl ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'STL' })),
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.blk ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'BLK' })),
+      createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: stats.min ?? '—' }), createElement('span', { className: 'stat-label', text: 'MIN' })),
     ),
+  )
+}
+
+function renderGameCard(game) {
+  const home = game.home_team?.abbreviation || 'N/A'
+  const visitor = game.visitor_team?.abbreviation || 'N/A'
+  const score = `${game.home_team_score || 0} – ${game.visitor_team_score || 0}`
+  const date = new Date(game.date).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+
+  return createElement(
+    'article',
+    { className: 'game-card' },
+    createElement('div', { className: 'game-teams' },
+      createElement('span', { text: home }),
+      createElement('span', { className: 'game-score', text: score }),
+      createElement('span', { text: visitor }),
+    ),
+    createElement('p', { className: 'game-date', text: date }),
+    createElement('p', { className: 'game-status', text: game.status || '' }),
   )
 }
 
@@ -592,16 +576,12 @@ function renderCartItem(item) {
   return createElement(
     'article',
     { className: 'cart-item' },
-    createElement(
-      'div',
-      null,
+    createElement('div', null,
       createElement('h3', { text: item.name }),
       createElement('p', { text: `Quantidade: ${item.quantity}` }),
       createElement('p', { className: 'price', text: formatCurrency(item.price) }),
     ),
-    createElement(
-      'div',
-      { className: 'cart-actions' },
+    createElement('div', { className: 'cart-actions' },
       createElement('button', { type: 'button', onClick: () => handleUpdateQuantity(item.id, -1) }, '−'),
       createElement('span', null, item.quantity),
       createElement('button', { type: 'button', onClick: () => handleUpdateQuantity(item.id, 1) }, '+'),
@@ -609,6 +589,8 @@ function renderCartItem(item) {
     ),
   )
 }
+
+// ── Handlers ──
 
 function handleProductSearch(value) {
   appState.productSearch = value
@@ -622,13 +604,11 @@ function handleCategoryChange(value) {
 
 function handlePlayerQuery(value) {
   appState.playerFilters.query = value
-  render()
   loadPlayers()
 }
 
 function handlePlayerTeam(value) {
   appState.playerFilters.team = value
-  render()
   loadPlayers()
 }
 
@@ -668,26 +648,7 @@ function handleCheckout() {
   render()
 }
 
-function renderProductCard(product) {
-  return createElement(
-    'article',
-    { className: 'product-card' },
-    createElement('div', { className: 'product-img-wrap' },
-      createElement('img', { src: product.image, alt: product.name }),
-      createElement('div', { className: 'product-img-caption' },
-        createElement('span', { className: 'product-category-badge', text: product.category }),
-        createElement('h3', null, product.name),
-      ),
-    ),
-    createElement('div', { className: 'product-copy' },
-      createElement('p', { className: 'product-team', text: product.team }),
-    ),
-    createElement('div', { className: 'product-footer' },
-      createElement('span', { className: 'product-price', text: formatCurrency(product.price) }),
-      createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar'),
-    ),
-  )
-}
+// ── Async ──
 
 async function loadTeams() {
   appState.loading.teams = true
@@ -715,7 +676,6 @@ async function loadPlayers() {
       perPage: 60,
       page: 1,
     })
-
     appState.players = data.data.map((player) => ({
       id: player.id,
       name: `${player.first_name} ${player.last_name}`,
@@ -750,9 +710,20 @@ async function loadGames() {
 }
 
 async function handlePlayerStats(playerId, playerName) {
+  // Se clicar no mesmo jogador, fecha o painel
+  if (appState.selectedPlayerId === playerId && appState.playerStats) {
+    appState.selectedPlayerId = null
+    appState.playerStats = null
+    render()
+    return
+  }
+
+  appState.selectedPlayerId = playerId
   appState.loadingStats = true
   appState.errorStats = ''
+  appState.playerStats = null
   render()
+
   try {
     const data = await fetchPlayerStats({ playerId, season: 2024 })
     appState.playerStats = { data: data.data, playerName, season: 2024, loaded: true }
@@ -774,10 +745,7 @@ function handleRouteChange() {
 }
 
 function initializeApp() {
-  if (!root) {
-    return
-  }
-
+  if (!root) return
   render()
   loadTeams()
   loadPlayers()
