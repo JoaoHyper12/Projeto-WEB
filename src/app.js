@@ -485,15 +485,15 @@ function renderAboutPage() {
     'section',
     { className: 'section-block about-card' },
     createElement('h2', { text: 'Sobre este projeto' }),
-    createElement('p', { html: 'Este site foi criado com JavaScript puro, consumindo dados reais da API <strong>balldontlie.io</strong> e usando HTML, CSS e DOM.' }),
+    createElement('p', { text: 'A Basket Store nasceu como um projeto pessoal para criar uma loja NBA com feel de basquetebol, usando apenas JavaScript, HTML e CSS. A ideia foi juntar produtos oficiais à informação real de jogadores e equipas, com um visual inspirado no universo da NBA.' }),
+    createElement('p', { text: 'O foco aqui é uma experiência simples: navegar por produtos, ver detalhes individuais e usar um carrinho que permanece entre sessões.' }),
+    createElement('h3', { text: 'Contacto' }),
     createElement(
       'ul',
-      null,
-      createElement('li', { text: 'Secção de Produtos independente (camisolas, bolas, acessórios)' }),
-      createElement('li', { text: 'Secção de Jogadores apenas informativa, sem compra' }),
-      createElement('li', { text: 'Secção de Equipas NBA com dados reais' }),
-      createElement('li', { text: 'Pesquisa, filtros e carrinho persistido em localStorage' }),
-      createElement('li', { text: 'Design responsivo e moderno' }),
+      { className: 'contact-list' },
+      createElement('li', { text: 'Email: contato@basketstore.com' }),
+      createElement('li', { text: 'Instagram: @basketstore' }),
+      createElement('li', { text: 'Telefone: +351 912 345 678' }),
     ),
   )
 }

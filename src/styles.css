@@ -650,6 +650,21 @@ nav a:hover {
   margin-bottom: 8px;
 }
 
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.contact-list li {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 12px 16px;
+}
+
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
