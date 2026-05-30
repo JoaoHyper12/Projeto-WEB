@@ -1,4 +1,4 @@
-import { fetchPlayers, fetchTeams } from './api.js'
+import { fetchPlayers, fetchTeams, fetchGames, fetchPlayerStats } from './api.js'
 import {
   loadCart,
   saveCart,
@@ -38,11 +38,17 @@ const appState = {
   players: [],
   playerFilters: { query: '', team: 'all' },
   teamSearch: '',
+  games: [],
   productCategory: 'Todos',
   productSearch: '',
   cart: loadCart(),
+  playerStats: null,
+  loadingGames: false,
+  loadingStats: false,
   loading: { players: false, teams: false },
   errors: { players: '', teams: '' },
+  errorGames: '',
+  errorStats: '',
 }
 
 const root = document.getElementById('root')
@@ -271,6 +277,23 @@ function renderHomePage() {
       ),
       createElement('div', { className: 'cards-grid' }, highlights),
     ),
+    createElement(
+      'section',
+      { className: 'section-block' },
+      createElement(
+        'div',
+        { className: 'section-heading' },
+        createElement(
+          'div',
+          null,
+          createElement('h2', { text: 'Jogos NBA recentes' }),
+          createElement('p', { text: 'Últimos jogos carregados da API balldontlie.' }),
+        ),
+        appState.loadingGames && createElement('span', { className: 'empty', text: 'A carregar jogos...' }),
+      ),
+      appState.errorGames && createElement('p', { className: 'empty', text: appState.errorGames }),
+      createElement('div', { className: 'cards-grid' }, appState.games.map(renderGameCard)),
+    ),
   )
 }
 
@@ -356,6 +379,7 @@ function renderPlayersPage() {
       appState.errors.players && createElement('p', { className: 'empty', text: appState.errors.players }),
       !appState.loading.players && !appState.errors.players && players.length === 0 && createElement('p', { className: 'empty', text: 'Nenhum jogador encontrado.' }),
       players.length > 0 && renderPlayersTable(players),
+      renderPlayerStatsArea(),
     ),
   )
 }
@@ -469,6 +493,7 @@ function renderPlayersTable(players) {
     createElement('th', { text: 'Equipa' }),
     createElement('th', { text: 'Conferência' }),
     createElement('th', { text: 'Divisão' }),
+    createElement('th', { text: 'Stats' }),
   )
 
   const bodyRows = players.map((player) =>
@@ -480,6 +505,11 @@ function renderPlayersTable(players) {
       createElement('td', { text: player.team }),
       createElement('td', { text: player.conference }),
       createElement('td', { text: player.division }),
+      createElement(
+        'td',
+        null,
+        createElement('button', { type: 'button', onClick: () => handlePlayerStats(player.id, player.name) }, 'Mostrar Stats'),
+      ),
     ),
   )
 
@@ -491,6 +521,62 @@ function renderPlayersTable(players) {
       { className: 'players-table' },
       createElement('thead', null, headerRow),
       createElement('tbody', null, bodyRows),
+    ),
+  )
+}
+
+function renderGameCard(game) {
+  const home = game.home_team_abbreviation || game.home_team?.abbreviation || 'N/A'
+  const visitor = game.visitor_team_abbreviation || game.visitor_team?.abbreviation || 'N/A'
+  const status = game.status || 'N/A'
+  const date = new Date(game.date).toLocaleDateString('pt-PT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+  const score = `${game.home_team_score || 0} - ${game.visitor_team_score || 0}`
+
+  return createElement(
+    'article',
+    { className: 'product-card' },
+    createElement('h3', { text: `${home} vs ${visitor}` }),
+    createElement('p', { text: `Resultado: ${score}` }),
+    createElement('p', { text: `Data: ${date}` }),
+    createElement('p', { text: status }),
+  )
+}
+
+function renderPlayerStatsArea() {
+  if (appState.loadingStats) {
+    return createElement('p', { className: 'empty', text: 'A carregar estatísticas...' })
+  }
+
+  if (appState.errorStats) {
+    return createElement('p', { className: 'empty', text: appState.errorStats })
+  }
+
+  if (!appState.playerStats || !appState.playerStats.data || appState.playerStats.data.length === 0) {
+    return createElement('p', { className: 'empty', text: 'Clique em "Mostrar Stats" para ver as médias do jogador.' })
+  }
+
+  const stats = appState.playerStats.data[0]
+  return createElement(
+    'article',
+    { className: 'section-block' },
+    createElement('h3', { text: `Médias ${appState.playerStats.playerName} - ${appState.playerStats.season}` }),
+    createElement('div', { className: 'cards-grid' },
+      createElement('article', { className: 'product-card' },
+        createElement('h4', { text: 'PTS' }),
+        createElement('p', { text: stats.pts.toFixed(1) }),
+      ),
+      createElement('article', { className: 'product-card' },
+        createElement('h4', { text: 'REB' }),
+        createElement('p', { text: stats.reb.toFixed(1) }),
+      ),
+      createElement('article', { className: 'product-card' },
+        createElement('h4', { text: 'AST' }),
+        createElement('p', { text: stats.ast.toFixed(1) }),
+      ),
     ),
   )
 }
@@ -647,6 +733,38 @@ async function loadPlayers() {
   }
 }
 
+async function loadGames() {
+  appState.loadingGames = true
+  appState.errorGames = ''
+  render()
+  try {
+    const data = await fetchGames({ season: 2024, perPage: 6, page: 1 })
+    appState.games = data.data
+  } catch (error) {
+    appState.errorGames = error.message
+    appState.games = []
+  } finally {
+    appState.loadingGames = false
+    render()
+  }
+}
+
+async function handlePlayerStats(playerId, playerName) {
+  appState.loadingStats = true
+  appState.errorStats = ''
+  render()
+  try {
+    const data = await fetchPlayerStats({ playerId, season: 2024 })
+    appState.playerStats = { data: data.data, playerName, season: 2024 }
+  } catch (error) {
+    appState.errorStats = error.message
+    appState.playerStats = null
+  } finally {
+    appState.loadingStats = false
+    render()
+  }
+}
+
 function handleRouteChange() {
   appState.route = getCurrentRoute()
   if (!ROUTES.some((item) => item.key === appState.route)) {
@@ -663,6 +781,7 @@ function initializeApp() {
   render()
   loadTeams()
   loadPlayers()
+  loadGames()
   window.addEventListener('hashchange', handleRouteChange)
 }
 

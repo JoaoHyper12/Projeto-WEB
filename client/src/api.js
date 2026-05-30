@@ -43,3 +43,35 @@ export async function fetchTeams() {
   })
   return parseResponse(response, 'as equipas')
 }
+
+export async function fetchGames({ season, page = 1, perPage = 10 } = {}) {
+  const params = new URLSearchParams({ page, per_page: perPage })
+  if (season) {
+    params.append('seasons[]', season)
+  }
+
+  const response = await fetch(`${API_BASE}/games?${params.toString()}`, {
+    headers: buildHeaders(),
+  })
+  return parseResponse(response, 'os jogos')
+}
+
+export async function fetchPlayerStats({ playerId, season }) {
+  const params = new URLSearchParams()
+  params.append('player_ids[]', playerId)
+  if (season) {
+    params.append('season', season)
+  }
+
+  const response = await fetch(`${API_BASE}/season_averages?${params.toString()}`, {
+    headers: buildHeaders(),
+  })
+  return parseResponse(response, 'as estatísticas do jogador')
+}
+
+export async function fetchPlayerById(id) {
+  const response = await fetch(`${API_BASE}/players/${id}`, {
+    headers: buildHeaders(),
+  })
+  return parseResponse(response, 'o jogador')
+}
