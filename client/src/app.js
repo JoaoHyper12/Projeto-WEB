@@ -20,14 +20,14 @@ const ROUTES = [
 const DEFAULT_ROUTE = 'home'
 
 const STORE_PRODUCTS = [
-  { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99 },
-  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99 },
-  { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99 },
-  { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99 },
-  { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99 },
-  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99 },
-  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99 },
-  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99 },
+  { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99, image: './imagens/Camisola Lakers – LeBron #23.jpg' },
+  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: './imagens/Camisola Warriors – Curry #30.webp' },
+  { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99, image: './imagens/Camisola Bulls – Jordan #23.webp' },
+  { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99, image: './imagens/Camisola Celtics – Tatum #0.jpg' },
+  { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99, image: './imagens/Bola NBA Official Game Ball.jpg' },
+  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: './imagens/Bola de Treino NBA.webp' },
+  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: './imagens/Boné NBA – Lakers Edition.webp' },
+  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: './imagens/Mochila NBA – Warriors.webp' },
 ]
 
 const PRODUCT_CATEGORIES = ['Todos', ...new Set(STORE_PRODUCTS.map((product) => product.category))]
@@ -166,8 +166,11 @@ function renderHeader() {
       'div',
       { className: 'brand' },
       createElement('a', { href: '#home' },
-        createElement('h1', { text: 'Basket Store' }),
-        createElement('p', { text: 'NBA real, experiência nova.' }),
+        createElement('img', { src: './imagens/logo.png', alt: 'Basket Store logo', className: 'brand-logo' }),
+        createElement('div', null,
+          createElement('h1', { text: 'Basket Store' }),
+          createElement('p', { text: 'NBA real, experiência nova.' }),
+        ),
       ),
     ),
     createElement('nav', null, navLinks),
@@ -202,23 +205,7 @@ function renderPage() {
 }
 
 function renderHomePage() {
-  const highlights = STORE_PRODUCTS.slice(0, 4).map((product) =>
-    createElement(
-      'article',
-      { className: 'product-card' },
-      createElement('div', { className: 'product-img-wrap' },
-        createElement('span', { text: product.category }),
-      ),
-      createElement('div', { className: 'product-copy' },
-        createElement('p', { className: 'product-team', text: product.team }),
-        createElement('h3', null, product.name),
-      ),
-      createElement('div', { className: 'product-footer' },
-        createElement('span', { className: 'product-price', text: formatCurrency(product.price) }),
-        createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar'),
-      ),
-    ),
-  )
+  const highlights = STORE_PRODUCTS.slice(0, 4).map(renderProductCard)
 
   return createElement(
     'div',
@@ -677,10 +664,15 @@ function renderProductCard(product) {
   return createElement(
     'article',
     { className: 'product-card' },
-    createElement('div', { className: 'product-img-wrap' }, createElement('span', { text: product.category })),
+    createElement('div', { className: 'product-img-wrap' },
+      createElement('img', { src: product.image, alt: product.name }),
+      createElement('div', { className: 'product-img-caption' },
+        createElement('span', { className: 'product-category-badge', text: product.category }),
+        createElement('h3', null, product.name),
+      ),
+    ),
     createElement('div', { className: 'product-copy' },
       createElement('p', { className: 'product-team', text: product.team }),
-      createElement('h3', null, product.name),
     ),
     createElement('div', { className: 'product-footer' },
       createElement('span', { className: 'product-price', text: formatCurrency(product.price) }),
