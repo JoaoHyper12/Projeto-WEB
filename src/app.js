@@ -1,4 +1,5 @@
 import { fetchPlayers, fetchTeams, fetchGames, fetchPlayerStats } from './api.js'
+import { STORE_PRODUCTS, PRODUCT_CATEGORIES } from './products.js'
 import {
   loadCart,
   saveCart,
@@ -18,19 +19,6 @@ const ROUTES = [
 ]
 
 const DEFAULT_ROUTE = 'home'
-
-const STORE_PRODUCTS = [
-  { id: 'prod-1', name: 'Camisola Lakers – LeBron #23', team: 'Los Angeles Lakers', category: 'Camisola', price: 89.99, image: 'camisola-lakers-lebron.jpg' },
-  { id: 'prod-2', name: 'Camisola Warriors – Curry #30', team: 'Golden State Warriors', category: 'Camisola', price: 89.99, image: 'camisola-warriors-curry.jpg' },
-  { id: 'prod-3', name: 'Camisola Bulls – Jordan #23', team: 'Chicago Bulls', category: 'Camisola', price: 94.99, image: 'camisola-bulls-jordan.webp' },
-  { id: 'prod-4', name: 'Camisola Celtics – Tatum #0', team: 'Boston Celtics', category: 'Camisola', price: 84.99, image: 'camisola-celtics-tatum.jpg' },
-  { id: 'prod-5', name: 'Bola NBA Official Game Ball', team: 'NBA', category: 'Bola', price: 149.99, image: 'bola-nba-official.jpg' },
-  { id: 'prod-6', name: 'Bola de Treino NBA', team: 'NBA', category: 'Bola', price: 49.99, image: 'bola-treino-nba.webp' },
-  { id: 'prod-7', name: 'Boné NBA – Lakers Edition', team: 'Los Angeles Lakers', category: 'Acessório', price: 34.99, image: 'bone-lakers.webp' },
-  { id: 'prod-8', name: 'Mochila NBA – Warriors', team: 'Golden State Warriors', category: 'Acessório', price: 59.99, image: 'mochila-warriors.webp' },
-]
-
-const PRODUCT_CATEGORIES = ['Todos', ...new Set(STORE_PRODUCTS.map((product) => product.category))]
 
 const appState = {
   route: getCurrentRoute(),
@@ -147,7 +135,7 @@ function render() {
 function renderHeader() {
   const navLinks = ROUTES.map((routeInfo) => {
     const routeKey = routeInfo.key
-    const isActive = routeKey === appState.route
+    const isActive = routeKey === appState.route || (routeKey === 'products' && appState.route.startsWith('product/'))
     const link = createElement('a', { href: `#${routeKey}`, className: isActive ? 'active' : '' }, routeInfo.label)
     if (routeKey === 'cart') {
       const { itemCount } = getCartTotals()
@@ -181,9 +169,19 @@ function renderMain() {
 }
 
 function renderPage() {
+  if (appState.route === DEFAULT_ROUTE) {
+    return renderHomePage()
+  }
+
+  if (appState.route.startsWith('product/')) {
+    return renderProductDetailsPage(appState.route.split('/')[1])
+  }
+
   if (!ROUTES.some((item) => item.key === appState.route)) {
     appState.route = DEFAULT_ROUTE
+    return renderHomePage()
   }
+
   switch (appState.route) {
     case 'home':     return renderHomePage()
     case 'products': return renderProductsPage()
@@ -300,6 +298,73 @@ function renderProductsPage() {
       filteredProducts.length === 0
         ? createElement('p', { className: 'empty', text: 'Nenhum produto encontrado.' })
         : createElement('div', { className: 'cards-grid' }, filteredProducts.map(renderProductCard)),
+    ),
+  )
+}
+
+function getProductById(productId) {
+  return STORE_PRODUCTS.find((product) => product.id === productId)
+}
+
+function renderProductDetailsPage(productId) {
+  const product = getProductById(productId)
+  if (!product) {
+    return createElement(
+      'section',
+      { className: 'section-block' },
+      createElement('h2', { text: 'Produto não encontrado' }),
+      createElement('p', { className: 'empty', text: 'Esse produto não está disponível no momento.' }),
+      createElement('a', { className: 'view-all-link', href: '#products', text: 'Voltar aos produtos →' }),
+    )
+  }
+
+  return createElement(
+    'section',
+    { className: 'section-block product-detail' },
+    createElement(
+      'div',
+      { className: 'section-heading' },
+      createElement(
+        'div',
+        null,
+        createElement('h2', { text: product.name }),
+        createElement('p', { text: product.description }),
+      ),
+      createElement('a', { className: 'view-all-link', href: '#products', text: 'Voltar aos produtos →' }),
+    ),
+    createElement(
+      'div',
+      { className: 'product-detail-grid' },
+      createElement(
+        'div',
+        { className: 'product-detail-image' },
+        createElement('img', { src: product.image, alt: product.name }),
+      ),
+      createElement(
+        'div',
+        { className: 'product-detail-info' },
+        createElement(
+          'div',
+          { className: 'product-detail-meta' },
+          createElement('span', { className: 'product-category-badge', text: product.category }),
+          createElement('span', { className: 'product-team-tag', text: product.team }),
+        ),
+        createElement('p', { className: 'product-detail-price', text: formatCurrency(product.price) }),
+        createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar ao carrinho'),
+        createElement('h3', { text: 'Detalhes do produto' }),
+        createElement(
+          'ul',
+          { className: 'product-detail-list' },
+          product.details.map((detail) =>
+            createElement(
+              'li',
+              null,
+              createElement('strong', { text: `${detail.label}: ` }),
+              detail.value,
+            ),
+          ),
+        ),
+      ),
     ),
   )
 }
@@ -443,7 +508,7 @@ function renderProductCard(product) {
     { className: 'product-card' },
     createElement('div', { className: 'product-img-wrap' },
       createElement('img', {
-        src: `./imagens/${product.image}`,
+        src: product.image,
         alt: product.name,
         className: 'product-img',
       }),
@@ -455,7 +520,12 @@ function renderProductCard(product) {
     ),
     createElement('div', { className: 'product-footer' },
       createElement('span', { className: 'product-price', text: formatCurrency(product.price) }),
-      createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar'),
+      createElement(
+        'div',
+        { className: 'product-footer-actions' },
+        createElement('a', { className: 'detail-link', href: `#product/${product.id}` }, 'Ver detalhes'),
+        createElement('button', { type: 'button', onClick: () => handleAddToCart(product) }, 'Adicionar'),
+      ),
     ),
   )
 }
@@ -751,7 +821,7 @@ async function handlePlayerStats(playerId, playerName) {
 
 function handleRouteChange() {
   appState.route = getCurrentRoute()
-  if (!ROUTES.some((item) => item.key === appState.route)) {
+  if (!ROUTES.some((item) => item.key === appState.route) && !appState.route.startsWith('product/')) {
     appState.route = DEFAULT_ROUTE
   }
   render()
