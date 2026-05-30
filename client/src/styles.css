@@ -54,7 +54,6 @@ button {
   justify-content: space-between;
   gap: 24px;
   padding: 20px 32px;
-  backdrop-filter: blur(18px);
   background: rgba(2, 6, 22, 0.78);
   position: sticky;
   top: 0;
