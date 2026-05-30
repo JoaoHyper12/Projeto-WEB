@@ -725,10 +725,19 @@ async function handlePlayerStats(playerId, playerName) {
   render()
 
   try {
-    const data = await fetchPlayerStats({ playerId, season: 2024 })
-    appState.playerStats = { data: data.data, playerName, season: 2024, loaded: true }
+    // Tenta 2024 primeiro, depois 2023 como fallback (free tier da API)
+    let statsData = []
+    const data2024 = await fetchPlayerStats({ playerId, season: 2024 })
+    if (data2024.data && data2024.data.length > 0) {
+      statsData = data2024.data
+      appState.playerStats = { data: statsData, playerName, season: 2024, loaded: true }
+    } else {
+      const data2023 = await fetchPlayerStats({ playerId, season: 2023 })
+      statsData = data2023.data || []
+      appState.playerStats = { data: statsData, playerName, season: statsData.length > 0 ? 2023 : 2024, loaded: true }
+    }
   } catch (error) {
-    appState.errorStats = error.message
+    appState.errorStats = 'Erro ao carregar estatísticas: ' + error.message
     appState.playerStats = null
   } finally {
     appState.loadingStats = false
