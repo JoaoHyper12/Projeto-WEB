@@ -525,11 +525,13 @@ function renderPlayerStatsArea() {
     return createElement('p', { className: 'empty', text: `Sem estatísticas disponíveis para ${appState.playerStats.playerName} em 2024.` })
   }
 
-  const stats = appState.playerStats.data[0]
+  const raw = appState.playerStats.data[0]
+  // novo endpoint devolve stats dentro de raw.stats
+  const stats = raw.stats || raw
   return createElement(
     'div',
     { className: 'stats-panel' },
-    createElement('h3', { text: `Médias de ${appState.playerStats.playerName} — Época 2024` }),
+    createElement('h3', { text: `Médias de ${appState.playerStats.playerName} — Época ${appState.playerStats.season}` }),
     createElement('div', { className: 'stats-grid' },
       createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.pts ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'PTS' })),
       createElement('div', { className: 'stat-item' }, createElement('span', { className: 'stat-value', text: (stats.reb ?? 0).toFixed(1) }), createElement('span', { className: 'stat-label', text: 'REB' })),
@@ -725,16 +727,18 @@ async function handlePlayerStats(playerId, playerName) {
   render()
 
   try {
-    // Tenta 2024 primeiro, depois 2023 como fallback (free tier da API)
-    let statsData = []
-    const data2024 = await fetchPlayerStats({ playerId, season: 2024 })
-    if (data2024.data && data2024.data.length > 0) {
-      statsData = data2024.data
-      appState.playerStats = { data: statsData, playerName, season: 2024, loaded: true }
-    } else {
-      const data2023 = await fetchPlayerStats({ playerId, season: 2023 })
-      statsData = data2023.data || []
-      appState.playerStats = { data: statsData, playerName, season: statsData.length > 0 ? 2023 : 2024, loaded: true }
+    // Tenta épocas de 2024 até 2020 até encontrar dados
+    let found = false
+    for (const season of [2024, 2023, 2022, 2021, 2020]) {
+      const data = await fetchPlayerStats({ playerId, season })
+      if (data.data && data.data.length > 0) {
+        appState.playerStats = { data: data.data, playerName, season, loaded: true }
+        found = true
+        break
+      }
+    }
+    if (!found) {
+      appState.playerStats = { data: [], playerName, season: 2024, loaded: true }
     }
   } catch (error) {
     appState.errorStats = 'Erro ao carregar estatísticas: ' + error.message

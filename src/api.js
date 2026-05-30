@@ -59,11 +59,10 @@ export async function fetchGames({ season, page = 1, perPage = 10 } = {}) {
 export async function fetchPlayerStats({ playerId, season }) {
   const params = new URLSearchParams()
   params.append('player_ids[]', playerId)
-  if (season) {
-    params.append('season', season)
-  }
+  params.append('season', season)
+  params.append('season_type', 'regular')
 
-  const response = await fetch(`${API_BASE}/season_averages?${params.toString()}`, {
+  const response = await fetch(`${API_BASE}/season_averages/general?${params.toString()}`, {
     headers: buildHeaders(),
   })
   return parseResponse(response, 'as estatísticas do jogador')
