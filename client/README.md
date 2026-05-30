@@ -1,16 +1,47 @@
-# React + Vite
+# Basket Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto é uma aplicação web JavaScript pura (sem React/JSX) que consome dados reais da API <https://balldontlie.io> e apresenta uma loja NBA interativa com várias vistas.
 
-Currently, two official plugins are available:
+## Estrutura
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `index.html` — página principal
+- `src/app.js` — lógica de navegação, DOM e interação
+- `src/api.js` — consumo da API externa
+- `src/cart.js` — gestão de carrinho e localStorage
+- `src/styles.css` — estilos do site
+- `server.js` — servidor estático local leve
 
-## React Compiler
+## Como executar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Abra o terminal em `client`
+2. Instale dependências (se ainda não tiver feito):
 
-## Expanding the ESLint configuration
+```powershell
+npm install
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Inicie o servidor:
+
+```powershell
+npm start
+```
+
+4. Abra no navegador:
+
+```text
+http://localhost:3000
+```
+
+## Funcionalidades
+
+- Navegação entre 6 vistas
+- Consumo de API externa para jogadores e equipas
+- Pesquisa e filtros em tempo real
+- Carrinho com persistência em `localStorage`
+- Criação dinâmica de conteúdo via DOM
+
+## Limpeza realizada
+
+- Removido React/JSX e Vite do projeto
+- Mantido apenas HTML, CSS, JavaScript e servidor Node simples
+- Simplificado `package.json` para `npm start`

@@ -49,6 +49,9 @@ const root = document.getElementById('root')
 
 function createElement(tag, props = {}, ...children) {
   const element = document.createElement(tag)
+  if (props == null) {
+    props = {}
+  }
 
   Object.entries(props).forEach(([key, value]) => {
     if (key === 'className') {
@@ -75,7 +78,7 @@ function createElement(tag, props = {}, ...children) {
   })
 
   children.flat().forEach((child) => {
-    if (child === null || child === undefined) {
+    if (child === null || child === undefined || typeof child === 'boolean') {
       return
     }
     if (typeof child === 'string' || typeof child === 'number') {

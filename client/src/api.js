@@ -1,4 +1,11 @@
 const API_BASE = 'https://api.balldontlie.io/nba/v1'
+const API_KEY = '57f7171d-c8c9-4f08-9908-625274de378e'
+
+function buildHeaders() {
+  return {
+    Authorization: API_KEY,
+  }
+}
 
 async function parseResponse(response, type) {
   if (response.ok) {
@@ -7,7 +14,7 @@ async function parseResponse(response, type) {
 
   const body = await response.text().catch(() => '')
   const errorMessage = response.status === 401
-    ? 'A API balldontlie exige uma chave de autorização. Verifique se a API está disponível.'
+    ? 'A API balldontlie exige uma chave de autorização. Verifique a chave configurada.'
     : `Não foi possível carregar ${type} da API. (${response.status} ${body || response.statusText})`
 
   throw new Error(errorMessage)
@@ -24,11 +31,15 @@ export async function fetchPlayers({ search = '', team = 'all', page = 1, perPag
     params.append('team_ids[]', team)
   }
 
-  const response = await fetch(`${API_BASE}/players?${params.toString()}`)
+  const response = await fetch(`${API_BASE}/players?${params.toString()}`, {
+    headers: buildHeaders(),
+  })
   return parseResponse(response, 'os jogadores')
 }
 
 export async function fetchTeams() {
-  const response = await fetch(`${API_BASE}/teams`)
+  const response = await fetch(`${API_BASE}/teams`, {
+    headers: buildHeaders(),
+  })
   return parseResponse(response, 'as equipas')
 }
