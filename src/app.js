@@ -42,6 +42,8 @@ const appState = {
 
 const root = document.getElementById('root')
 
+let playerSearchDebounceTimer = null
+
 function createElement(tag, props = {}, ...children) {
   const element = document.createElement(tag)
   if (props == null) {
@@ -126,10 +128,72 @@ function getCartTotals() {
   return { itemCount, total }
 }
 
-function render() {
+function render(focusId = null) {
   root.innerHTML = ''
   const wrapper = createElement('div', { className: 'app-wrapper' }, renderHeader(), renderMain())
   root.appendChild(wrapper)
+  if (focusId) {
+    const el = document.getElementById(focusId)
+    if (el) {
+      el.focus()
+      // Restore cursor to end of input
+      if (el.setSelectionRange) {
+        const len = el.value.length
+        el.setSelectionRange(len, len)
+      }
+    }
+  }
+}
+
+function renderMainOnly(focusId) {
+  // Atualiza apenas a secção de resultados, sem recriar os inputs
+  const resultsEl = root.querySelector('.section-block')
+  if (resultsEl) {
+    // Determina qual secção recriar com base na rota atual
+    let newSection = null
+    if (appState.route === 'products') {
+      const filtered = getFilteredProducts()
+      newSection = createElement(
+        'section',
+        { className: 'section-block' },
+        createElement('div', { className: 'section-heading' },
+          createElement('div', null,
+            createElement('h2', { text: 'Produtos' }),
+            createElement('p', { text: 'Camisolas, bolas e acessórios oficiais NBA.' }),
+          ),
+          createElement('span', { text: `${filtered.length} artigos` }),
+        ),
+        filtered.length === 0
+          ? createElement('p', { className: 'empty', text: 'Nenhum produto encontrado.' })
+          : createElement('div', { className: 'cards-grid' }, filtered.map(renderProductCard)),
+      )
+    } else if (appState.route === 'teams') {
+      const teams = getFilteredTeams()
+      newSection = createElement(
+        'section',
+        { className: 'section-block' },
+        createElement('div', { className: 'section-heading' },
+          createElement('div', null,
+            createElement('h2', { text: 'Equipas NBA' }),
+            createElement('p', { text: 'Equipas oficiais retornadas pela API.' }),
+          ),
+          createElement('span', { text: `${teams.length} equipas` }),
+        ),
+        teams.length === 0
+          ? createElement('p', { className: 'empty', text: 'Nenhuma equipa encontrada.' })
+          : createElement('div', { className: 'cards-grid team-grid' }, teams.map(renderTeamCard)),
+      )
+    }
+    if (newSection) {
+      resultsEl.replaceWith(newSection)
+      if (focusId) {
+        const el = document.getElementById(focusId)
+        if (el) { el.focus(); const len = el.value.length; el.setSelectionRange(len, len) }
+      }
+      return
+    }
+  }
+  render()
 }
 
 function renderHeader() {
@@ -666,27 +730,32 @@ function renderCartItem(item) {
 
 function handleProductSearch(value) {
   appState.productSearch = value
-  render()
+  renderMainOnly('productSearch')
 }
 
 function handleCategoryChange(value) {
   appState.productCategory = value
-  render()
+  renderMainOnly('categoryFilter')
 }
 
 function handlePlayerQuery(value) {
   appState.playerFilters.query = value
-  loadPlayers()
+  appState._focusId = 'playerSearch'
+  clearTimeout(playerSearchDebounceTimer)
+  playerSearchDebounceTimer = setTimeout(() => {
+    loadPlayers()
+  }, 400)
 }
 
 function handlePlayerTeam(value) {
   appState.playerFilters.team = value
+  appState._focusId = null
   loadPlayers()
 }
 
 function handleTeamSearch(value) {
   appState.teamSearch = value
-  render()
+  renderMainOnly('teamSearch')
 }
 
 function handleAddToCart(product) {
@@ -761,7 +830,8 @@ async function loadPlayers() {
     appState.players = []
   } finally {
     appState.loading.players = false
-    render()
+    render(appState._focusId)
+    appState._focusId = null
   }
 }
 
